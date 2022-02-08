@@ -1,0 +1,20 @@
+public class JvmComprehension { //Система загрузки классов, ClassLoader'ы анализируют класс JvmComprehension.Система загрузки классов состоит из трех уровней, сначала класс подгружается в нижестоящий ClassLoader  Application ClassLoader
+Даже если класс находится, запрос всё равно отправляется в вышестоящий ClassLoader  Platform ClassLoader(уровень доп.библиотек), далее запрос отправляется в Bootstap ClassLoader(уровень базовых библиотек).Если класс нашелся он загружается в память, 
+если на третьем уровне загрузки классов класс не нашелся, запрос отправляется обратно в Platform ClassLoader.Если класс не нашелся на уровне Platform ClassLoader он возвращается в Application ClassLoader.Если класс нашелся в Application ClassLoader он 
+загружается в память.Если этот класс не найдется, то будет исключение java.lang.ClassNotFoundExseption.После подгрузки классов, происходит связывание.После связывания происходит инициализация.Класс  JvmComprehension попадает в Metaspace(область памяти)
+    public static void main(String[] args) {//Далее загружается метод main. У него создается фрейм в стеке(область памяти)
+        int i = 1;                      // 1 Переменная i заносится во фрейм main.
+        Object o = new Object();        // 2 Оператор new выделяет память под объект Object().Object() помещается в кучу. Создается переменна o и помещается во фрейм main. В переменную о запи
+сывается ссылка на объект Object() в куче.
+        Integer ii = 2;                 // 3 Переменная ii заносится во фрейм main.
+        printAll(o, i, ii);             // 4 Под вызов метода printAll() создается фрейм printAll() в стеке . . Создается фрейм toString().
+        System.out.println("finished"); // 7 Создается фрейм System.out.println() в стеке. В него записывается значение "finished"
+    }
+
+    private static void printAll(Object o, int i, Integer ii) {Во фрейм printAll() записывается переменная o, в нее записывается ссылка на Object(). На Object()
+ссылаются две разные переменные в разных фреймах.Во фрейм printAll() записывается переменная int i. Во фрейм printAll() записывается переменная Integer ii.
+        Integer uselessVar = 700;                   // 5 Во фрейм printAll() записывается переменная uselessVar. 
+        System.out.println(o.toString() + i + ii);  // 6 Создается фрейм System.out.println()в стеке. В него записываются переменные i,ii и o. Создается фрейм toString().
+    }
+}
+                                                     // 8 Сборщик мусора во время паузы(Stop the World) удалит из кучи все ненужные объекты, которые больше не используются.
